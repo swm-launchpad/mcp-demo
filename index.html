@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전화번호 추첨 시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="tel"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #5568d3;
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        .btn-draw {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 18px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-draw:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-draw:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .phone-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .phone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-item:nth-child(1) {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            animation-delay: 0.1s;
+        }
+
+        .result-item:nth-child(2) {
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+            animation-delay: 0.2s;
+        }
+
+        .result-item:nth-child(3) {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+            animation-delay: 0.3s;
+        }
+
+        .result-item:nth-child(4) {
+            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            animation-delay: 0.4s;
+        }
+
+        .rank {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .phone {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .info {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 전화번호 추첨 시스템</h1>
+
+        <div class="info">
+            전화번호를 입력하고 추첨 버튼을 눌러주세요 (최소 4명 필요)
+        </div>
+
+        <div class="input-section">
+            <div class="phone-input-group">
+                <input type="tel" id="phoneInput" placeholder="전화번호 입력 (예: 010-1234-5678)" maxlength="13">
+                <button class="btn-add" onclick="addPhone()">추가</button>
+            </div>
+            <div id="error" class="error"></div>
+        </div>
+
+        <div class="phone-list" id="phoneList"></div>
+
+        <button class="btn-draw" id="drawButton" onclick="drawWinners()" disabled>
+            🎲 추첨하기
+        </button>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        let phones = [];
+
+        function formatPhoneNumber(value) {
+            const numbers = value.replace(/[^\d]/g, '');
+            if (numbers.length <= 3) {
+                return numbers;
+            } else if (numbers.length <= 7) {
+                return numbers.slice(0, 3) + '-' + numbers.slice(3);
+            } else {
+                return numbers.slice(0, 3) + '-' + numbers.slice(3, 7) + '-' + numbers.slice(7, 11);
+            }
+        }
+
+        document.getElementById('phoneInput').addEventListener('input', function(e) {
+            e.target.value = formatPhoneNumber(e.target.value);
+        });
+
+        document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addPhone();
+            }
+        });
+
+        function validatePhone(phone) {
+            const numbers = phone.replace(/[^\d]/g, '');
+            return numbers.length >= 10 && numbers.length <= 11;
+        }
+
+        function addPhone() {
+            const input = document.getElementById('phoneInput');
+            const phone = input.value.trim();
+            const errorDiv = document.getElementById('error');
+
+            errorDiv.textContent = '';
+
+            if (!phone) {
+                errorDiv.textContent = '전화번호를 입력해주세요.';
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                errorDiv.textContent = '올바른 전화번호 형식이 아닙니다.';
+                return;
+            }
+
+            if (phones.includes(phone)) {
+                errorDiv.textContent = '이미 추가된 전화번호입니다.';
+                return;
+            }
+
+            phones.push(phone);
+            input.value = '';
+            updatePhoneList();
+            updateDrawButton();
+        }
+
+        function removePhone(index) {
+            phones.splice(index, 1);
+            updatePhoneList();
+            updateDrawButton();
+            document.getElementById('results').classList.remove('show');
+        }
+
+        function updatePhoneList() {
+            const listDiv = document.getElementById('phoneList');
+            listDiv.innerHTML = phones.map((phone, index) => `
+                <div class="phone-item">
+                    <span>${phone}</span>
+                    <button class="btn-remove" onclick="removePhone(${index})">삭제</button>
+                </div>
+            `).join('');
+        }
+
+        function updateDrawButton() {
+            const button = document.getElementById('drawButton');
+            button.disabled = phones.length < 4;
+            button.textContent = phones.length < 4
+                ? `🎲 추첨하기 (${phones.length}/4명)`
+                : '🎲 추첨하기';
+        }
+
+        function drawWinners() {
+            if (phones.length < 4) return;
+
+            const shuffled = [...phones].sort(() => Math.random() - 0.5);
+            const winners = shuffled.slice(0, 4);
+
+            const resultsDiv = document.getElementById('results');
+            const ranks = ['🥇 1등', '🥈 2등', '🥉 3등', '🎖️ 4등'];
+
+            resultsDiv.innerHTML = winners.map((phone, index) => `
+                <div class="result-item">
+                    <span class="rank">${ranks[index]}</span>
+                    <span class="phone">${phone}</span>
+                </div>
+            `).join('');
+
+            resultsDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>

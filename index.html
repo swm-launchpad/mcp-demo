@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>저녁 메뉴 추천</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="glass-card">
+            <h1>오늘 저녁 뭐 먹지? 🍽️</h1>
+            <p class="subtitle">고민하지 마세요! 완벽한 저녁 메뉴를 추천해 드립니다.</p>
+
+            <div class="mood-selector">
+                <h3>오늘의 기분은?</h3>
+                <div class="mood-buttons">
+                    <button class="mood-btn" data-mood="hungry">배고파요</button>
+                    <button class="mood-btn" data-mood="light">가볍게</button>
+                    <button class="mood-btn" data-mood="spicy">매운게 땡겨요</button>
+                    <button class="mood-btn" data-mood="comfort">위로가 필요해요</button>
+                </div>
+            </div>
+
+            <button class="recommend-btn" id="recommendBtn">
+                <span>메뉴 추천받기</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M13 16L18 12L13 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 12H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+
+            <div class="result" id="result">
+                <div class="result-card glass-card">
+                    <h2 id="menuName"></h2>
+                    <p id="menuDescription"></p>
+                    <div class="menu-details">
+                        <span class="tag" id="menuType"></span>
+                        <span class="tag" id="menuPrice"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="glass-footer">
+            <p>Made with 💙 by Claude Code</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
